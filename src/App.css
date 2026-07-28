@@ -1,0 +1,183 @@
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 0px;
+  background: #f5f3ef;
+  color: #241f2a;
+}
+
+.sidebar {
+  background: #1f1724;
+  color: #f7eef8;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.brand {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.subject-tree {
+  display: grid;
+  gap: 10px;
+}
+
+.tree-node {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: 14px;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.tree-node:hover,
+.tree-node.active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.workspace-header {
+  padding: 24px 28px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  background: #fff;
+  border-bottom: 1px solid #e6e2df;
+}
+
+.breadcrumb {
+  margin: 0 0 10px;
+  color: #8b7f8c;
+  font-size: 0.95rem;
+}
+
+.workspace-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.workspace-actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 20px;
+  background: #6b48f3;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.workspace-actions button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(107, 72, 243, 0.18);
+}
+
+.workspace-tabs {
+  display: flex;
+  gap: 12px;
+  padding: 16px 28px;
+  background: #fbf7f6;
+}
+
+.workspace-tabs button {
+  background: transparent;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #6f5a72;
+  font-weight: 600;
+}
+
+.workspace-tabs button.active {
+  background: #e8d8ff;
+  color: #4e2f78;
+}
+
+.workspace-panel {
+  flex: 1;
+  padding: 24px 28px 28px;
+  overflow: hidden;
+}
+
+.canvas-panel,
+.notes-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 20px;
+}
+
+.canvas-toolbar,
+.notes-toolbar {
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(37, 23, 51, 0.08);
+  color: #453749;
+  font-weight: 600;
+}
+
+.canvas-frame {
+  flex: 1;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #f0ecec;
+}
+
+.notes-editor {
+  flex: 1;
+  border-radius: 24px;
+  border: 1px solid #e8e0df;
+  padding: 20px;
+  background: #fff;
+  overflow-y: auto;
+}
+
+.note-content p {
+  margin: 0 0 1rem;
+  line-height: 1.68;
+  color: #3b2c3f;
+}
+
+.note-content h1,
+.note-content h2,
+.note-content h3 {
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 1120px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 18px 14px;
+  }
+
+  .subject-tree {
+    display: flex;
+    gap: 10px;
+  }
+}
