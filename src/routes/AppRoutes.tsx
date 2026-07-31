@@ -1,14 +1,15 @@
 import { Route, Routes } from 'react-router-dom'
 import { AppLayout } from './AppLayout'
-import { BoardPage } from '../features/board/BoardPage'
-import { EmptyBoardPrompt } from '../features/board/EmptyBoardPrompt'
+import { HomePage } from '../pages/HomePage'
+import { TopicPage } from '../pages/TopicPage'
 
 export function AppRoutes() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route index element={<EmptyBoardPrompt />} />
-        <Route path="board/:boardId" element={<BoardPage />} />
+        <Route index element={<HomePage />} />
+        <Route path="tema/:slug" element={<TopicPage />} />
+        <Route path="*" element={<HomePage />} />
       </Route>
     </Routes>
   )
