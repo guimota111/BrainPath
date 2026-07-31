@@ -1,13 +1,13 @@
 import { BrowserRouter } from 'react-router-dom'
-import { AuthGate } from './features/auth/AuthGate'
+import { StudyModeProvider } from './lib/StudyModeProvider'
 import { AppRoutes } from './routes/AppRoutes'
 
 function App() {
   return (
     <BrowserRouter>
-      <AuthGate>
+      <StudyModeProvider>
         <AppRoutes />
-      </AuthGate>
+      </StudyModeProvider>
     </BrowserRouter>
   )
 }

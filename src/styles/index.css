@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
-@theme {
+/*
+ * `static` é obrigatório: o Tailwind 4 só emite as variáveis de tema que vê
+ * escritas numa classe, e a cor de acento de cada tema é escolhida em runtime
+ * (`accentStyle`). Sem isso, `var(--color-series-7)` sai vazia no navegador.
+ */
+@theme static {
   --color-surface: #fcfcfb;
   --color-page: #f9f9f7;
   --color-ink: #0b0b0b;
@@ -30,8 +35,10 @@
   --color-heat-600: #2f68c4;
   --color-heat-700: #204d9a;
 
-  --radius-card: 0.75rem;
-  --shadow-card: 0 1px 2px rgb(11 11 11 / 0.06), 0 4px 12px rgb(11 11 11 / 0.06);
+  /* Tecido: paleta de referência das artes histológicas esquemáticas. */
+  --color-tissue-nucleus: #6d3f7a;
+  --color-tissue-cytoplasm: #f0d9e4;
+  --color-tissue-stroma: #e8c9b8;
 
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
@@ -54,7 +61,9 @@
     --color-series-7: #9085e9;
     --color-series-8: #e66767;
 
-    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 16px rgb(0 0 0 / 0.35);
+    --color-tissue-nucleus: #c79ad3;
+    --color-tissue-cytoplasm: #4a2f3d;
+    --color-tissue-stroma: #4d3a30;
   }
 }
 
@@ -75,7 +84,9 @@
   --color-series-7: #9085e9;
   --color-series-8: #e66767;
 
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 16px rgb(0 0 0 / 0.35);
+  --color-tissue-nucleus: #c79ad3;
+  --color-tissue-cytoplasm: #4a2f3d;
+  --color-tissue-stroma: #4d3a30;
 }
 
 * {
@@ -98,9 +109,19 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* react-grid-layout placeholder */
-.react-grid-item.react-grid-placeholder {
-  background: var(--color-series-1);
-  opacity: 0.12;
-  border-radius: var(--radius-card);
+/*
+ * Regra 3 do projeto: sem moldura. Uma cena é uma composição, não um card.
+ * Cada cena redefine --accent e os artifacts dentro dela se tingem sozinhos.
+ */
+.scene {
+  --accent: var(--color-series-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

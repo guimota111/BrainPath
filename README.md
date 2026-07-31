@@ -1,32 +1,65 @@
-# React + TypeScript + Vite
+# BrainPath
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Site de consulta em patologia onde a informação chega como arte interativa. Em vez de
+parágrafos, o leitor encontra diagramas clicáveis e desenrola o texto por camadas.
 
-Currently, two official plugins are available:
+## As cinco regras
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Valem para toda peça do site. São elas que separam infográfico de card com texto.
 
-## React Compiler
+1. **Nada de parágrafo na primeira tela.** O estado inicial de qualquer peça é geometria, cor e
+   rótulos curtos. Texto corrido só existe depois de um clique deliberado.
+2. **Profundidade em níveis fixos.** Todo elemento clicável declara `glance` (rótulo) →
+   `brief` (uma frase) → `detail` (painel). O comportamento é o mesmo no site inteiro.
+3. **Sem moldura.** Nenhum card, nenhuma borda de widget. Cada cena é uma composição, com uma
+   cor de acento própria.
+4. **Recuperação antes da revelação.** Com o modo treino ligado, todo elemento que declara
+   `probe` pergunta antes de contar.
+5. **Estado na URL.** Hotspot aberto, camada ativa e filtros viram query params — link que abre
+   no ponto exato e botão voltar que desfaz passo a passo.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Como o conteúdo funciona
 
-## Expanding the Oxlint configuration
+Conteúdo é código. Um tema é um arquivo de dados que descreve *o que* é verdade sobre o assunto;
+os artifacts em `src/artifacts` decidem *como* aquilo vira arte interativa.
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```
+src/
+  content/
+    schema.ts      tipos de Topic, Scene e do sistema de profundidade
+    registry.ts    índice dos temas + busca da porta "por achado"
+    topics/<slug>/ um diretório por tema
+  artifacts/
+    marker-matrix/ painel imuno com modo bancada
+    hotspot-map/   arte esquemática com regiões clicáveis
+    layer-stack/   camadas que se acumulam sobre a mesma arte
+    art/           os desenhos SVG, registrados por nome
+  ui/              primitivas de revelação compartilhadas
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### Adicionar um tema
+
+1. Crie `src/content/topics/<slug>/index.ts` exportando um `Topic`.
+2. Registre o tema em `src/content/registry.ts`.
+3. Preencha `findings` — é o que alimenta a busca por achado morfológico na home.
+4. Enquanto não houver revisão de um patologista, mantenha `draft: true`: o site marca isso
+   na cara do leitor.
+
+Precisando de uma arte nova, adicione o componente em `src/artifacts/art/` e registre-o em
+`art/registry.ts`; o tema passa a referenciá-lo por string.
+
+## Rodar
+
+```bash
+npm install
+npm run dev      # servidor de desenvolvimento
+npm run build    # typecheck + build de produção
+npm run lint
+```
+
+Deploy estático via Firebase Hosting (`firebase.json`).
+
+## Aviso
+
+Material de apoio ao estudo. Não substitui as classificações vigentes nem serve como ferramenta
+diagnóstica.
