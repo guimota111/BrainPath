@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Uma execução por branch: push em sequência cancela a anterior em vez de
+# enfileirar deploys que já nasceram desatualizados.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint e build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      # `npm run build` roda `tsc -b` antes do Vite, então isto também typecheca.
+      - run: npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  deploy:
+    name: Deploy no Firebase Hosting
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # Sem o secret configurado o job passa e avisa, em vez de pintar o main de
+      # vermelho a cada push. Assim que o secret existir, o deploy começa sozinho.
+      - id: guard
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BRAINPATH123 }}
+        run: |
+          if [ -z "$SERVICE_ACCOUNT" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Secret FIREBASE_SERVICE_ACCOUNT_BRAINPATH123 ausente — deploy pulado. Veja o README."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/download-artifact@v4
+        if: steps.guard.outputs.configured == 'true'
+        with:
+          name: dist
+          path: dist
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        if: steps.guard.outputs.configured == 'true'
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BRAINPATH123 }}
+          projectId: brainpath123
+          channelId: live
