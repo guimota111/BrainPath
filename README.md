@@ -57,7 +57,30 @@ npm run build    # typecheck + build de produção
 npm run lint
 ```
 
-Deploy estático via Firebase Hosting (`firebase.json`).
+## Deploy
+
+Todo push no `main` roda lint e build e publica no Firebase Hosting
+(`.github/workflows/ci.yml`). Pull requests rodam só lint e build.
+
+O deploy fica em espera até o repositório ter o secret com a credencial — sem ele
+o job passa com um aviso, em vez de falhar. Para ligar, uma vez só:
+
+```bash
+npm install -g firebase-tools
+firebase login
+firebase init hosting:github
+```
+
+O comando cria a service account, grava o secret
+`FIREBASE_SERVICE_ACCOUNT_BRAINPATH123` no GitHub e oferece gerar workflows —
+**recuse**, ou apague os que ele criar: o workflow deste repositório já cobre isso.
+
+Para publicar à mão, sem passar pelo GitHub:
+
+```bash
+npm run build
+firebase deploy --only hosting
+```
 
 ## Aviso
 
