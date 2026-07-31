@@ -35,37 +35,40 @@ jobs:
           retention-days: 7
 
   deploy:
-    name: Deploy no Firebase Hosting
+    name: Publicar no GitHub Pages
     needs: check
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+
+    # Publicar no Pages via Actions usa o token que o próprio GitHub injeta na
+    # execução. Não há secret para criar nem credencial para guardar.
     permissions:
       contents: read
+      pages: write
+      id-token: write
+
+    # Um deploy por vez, e sem cancelar o que está no ar: interromper uma
+    # publicação em curso deixaria o site num estado indefinido.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
     steps:
-      - uses: actions/checkout@v4
-
-      # Sem o secret configurado o job passa e avisa, em vez de pintar o main de
-      # vermelho a cada push. Assim que o secret existir, o deploy começa sozinho.
-      - id: guard
-        env:
-          SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BRAINPATH123 }}
-        run: |
-          if [ -z "$SERVICE_ACCOUNT" ]; then
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Secret FIREBASE_SERVICE_ACCOUNT_BRAINPATH123 ausente — deploy pulado. Veja o README."
-          else
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-          fi
-
+      # Reaproveita o dist do job anterior em vez de compilar de novo.
       - uses: actions/download-artifact@v4
-        if: steps.guard.outputs.configured == 'true'
         with:
           name: dist
           path: dist
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        if: steps.guard.outputs.configured == 'true'
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
         with:
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BRAINPATH123 }}
-          projectId: brainpath123
-          channelId: live
+          path: dist
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

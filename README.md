@@ -59,28 +59,30 @@ npm run lint
 
 ## Deploy
 
-Todo push no `main` roda lint e build e publica no Firebase Hosting
-(`.github/workflows/ci.yml`). Pull requests rodam só lint e build.
+O site vive em **https://guimota111.github.io/BrainPath/**.
 
-O deploy fica em espera até o repositório ter o secret com a credencial — sem ele
-o job passa com um aviso, em vez de falhar. Para ligar, uma vez só:
+Todo push no `main` roda lint e build e publica no GitHub Pages
+(`.github/workflows/ci.yml`). Pull requests rodam só lint e build. A publicação
+usa o token que o GitHub injeta na própria execução — não há secret a criar nem
+credencial a guardar.
 
-```bash
-npm install -g firebase-tools
-firebase login
-firebase init hosting:github
-```
+Pré-requisito, uma vez só: em **Settings → Pages**, o campo *Source* precisa
+estar como **GitHub Actions**. Com a opção antiga, "Deploy from a branch", o
+GitHub serve o código-fonte cru e a página abre em branco.
 
-O comando cria a service account, grava o secret
-`FIREBASE_SERVICE_ACCOUNT_BRAINPATH123` no GitHub e oferece gerar workflows —
-**recuse**, ou apague os que ele criar: o workflow deste repositório já cobre isso.
+### O prefixo do caminho
 
-Para publicar à mão, sem passar pelo GitHub:
+O Pages serve o site em subdiretório, então `base` está fixo em `/BrainPath/`
+no `vite.config.ts` e o roteador herda esse valor via `import.meta.env.BASE_URL`.
+Mudar o destino de publicação é mexer só no `base`.
 
-```bash
-npm run build
-firebase deploy --only hosting
-```
+O build também gera um `404.html` idêntico ao `index.html`. O Pages não tem regra
+de reescrita, e sem isso abrir `/tema/<slug>` direto na barra de endereço daria
+erro — quebrando justamente os links compartilháveis.
+
+`firebase.json` e `.firebaserc` seguem no repositório para quem quiser voltar ao
+Firebase Hosting. Nesse caso, `base` precisa virar `/`, já que lá o site é
+servido na raiz.
 
 ## Aviso
 
